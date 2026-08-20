@@ -15,7 +15,7 @@
   }
 
   *{ box-sizing:border-box; margin:0; padding:0; }
-  html{ -webkit-text-size-adjust:100%; scroll-snap-type: y mandatory; }
+  html{ -webkit-text-size-adjust:100%; scroll-snap-type: y proximity; }
   body{
     background: var(--paper);
     color: var(--ink);
@@ -34,7 +34,6 @@
     display:flex; flex-direction:column; align-items:center;
     overflow:hidden;
     scroll-snap-align: start;
-    scroll-snap-stop: always;
   }
 
   h1{
@@ -148,6 +147,9 @@
     padding: 56px 22px 64px;
     min-height: 100vh;
     min-height: 100svh;
+    max-height: 100vh;
+    max-height: 100svh;
+    overflow-y: auto;
     box-sizing: border-box;
     display:flex;
     align-items:center;
@@ -169,6 +171,31 @@
   .stub .sub{
     font-size: 11px; letter-spacing:0.14em; text-transform:uppercase; color:#94907d;
     margin-bottom: 28px;
+  }
+
+  .thank-you{
+    text-align:center;
+    padding: 30px 0 10px;
+    animation: fadeUp 0.5s ease-out;
+  }
+  .thank-you-heart{
+    font-size: 52px;
+    color: var(--red);
+    line-height:1;
+    margin-bottom: 14px;
+    animation: heartPop 0.6s ease-out;
+  }
+  .thank-you h2{ margin-bottom: 10px; }
+  .thank-you .sub{ margin-bottom: 0; color: var(--paper); opacity:0.75; }
+
+  @keyframes fadeUp{
+    0%{ opacity:0; transform: translateY(14px); }
+    100%{ opacity:1; transform: translateY(0); }
+  }
+  @keyframes heartPop{
+    0%{ transform: scale(0.4); opacity:0; }
+    60%{ transform: scale(1.15); opacity:1; }
+    100%{ transform: scale(1); }
   }
 
   .row{
@@ -288,31 +315,39 @@
 
 <section class="info">
   <div class="stub">
-    <h2>I need one</h2>
-    <div class="sub">I ❤ Hammersmith FC — Tee</div>
+    <div id="formState">
+      <h2>I need one</h2>
+      <div class="sub">I ❤ Hammersmith FC — Tee</div>
 
-    <div class="row price"><span>Price</span><span>£18</span></div>
+      <div class="row price"><span>Price</span><span>£18</span></div>
 
-    <div class="sub" style="margin-top:26px;margin-bottom:0;">Select size</div>
-    <div class="sizes">
-      <button class="size-btn" type="button">S</button>
-      <button class="size-btn" type="button">M</button>
-      <button class="size-btn" type="button">L</button>
-      <button class="size-btn" type="button">XL</button>
-      <button class="size-btn" type="button">XXL</button>
+      <div class="sub" style="margin-top:26px;margin-bottom:0;">Select size</div>
+      <div class="sizes">
+        <button class="size-btn" type="button">S</button>
+        <button class="size-btn" type="button">M</button>
+        <button class="size-btn" type="button">L</button>
+        <button class="size-btn" type="button">XL</button>
+        <button class="size-btn" type="button">XXL</button>
+      </div>
+
+      <div class="field">
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name" autocomplete="name" required>
+      </div>
+      <div class="field">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" autocomplete="email" required>
+      </div>
+
+      <a class="cta" href="#" onclick="return false;">Register interest</a>
+      <div class="note">You'll get an email with payment info.<br>Love from Ciara, Vicky and Izzy ❤</div>
     </div>
 
-    <div class="field">
-      <label for="name">Name</label>
-      <input type="text" id="name" name="name" autocomplete="name" required>
+    <div id="thankYouState" class="thank-you" hidden>
+      <div class="thank-you-heart">❤</div>
+      <h2>I ❤ HFC</h2>
+      <div class="sub">You're on the list!</div>
     </div>
-    <div class="field">
-      <label for="email">Email</label>
-      <input type="email" id="email" name="email" autocomplete="email" required>
-    </div>
-
-    <a class="cta" href="#" onclick="return false;">Register interest</a>
-    <div class="note">You'll get an email with payment info.<br>Love from Ciara, Vicky and Izzy ❤</div>
   </div>
 </section>
 
@@ -350,6 +385,9 @@
         body: JSON.stringify({ name, email, size: selectedSize })
       }).catch(err => console.error('Submission failed', err));
     }
+
+    document.getElementById('formState').hidden = true;
+    document.getElementById('thankYouState').hidden = false;
 
     burstHearts();
   });
