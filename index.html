@@ -7,6 +7,12 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Anton&family=Permanent+Marker&family=Space+Mono:wght@400;700&display=swap');
 
+  @font-face{
+    font-family:'IzzyHand2';
+    src:url('fonts/IzzyHand2.ttf') format('truetype');
+    font-display:swap;
+  }
+
   :root{
     --paper: #e9e4d6;
     --ink: #171512;
@@ -61,7 +67,7 @@
   .toss-title em{ font-style:normal; color:rgba(192,36,47,0.35); }
   .toss-marker{
     position:absolute; left:0; right:0; top:22px; text-align:center;
-    font-family:'Permanent Marker', cursive; font-size:clamp(16px, 3.4vw, 26px); color:var(--red);
+    font-family:'IzzyHand2', 'Permanent Marker', cursive; font-size:clamp(22px, 4.6vw, 36px); color:var(--red);
     transform:rotate(-2deg);
     z-index:50; pointer-events:none;
   }
