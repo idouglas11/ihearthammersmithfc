@@ -23,70 +23,42 @@
     overflow-x:hidden;
   }
 
-  /* ---------- 1 + 2: video intro, then the spinning ring ---------- */
-  .stage{ position:relative; height: 380vh; }
-  .stage-pin{
-    position:sticky; top:0;
-    height:100vh; height:100svh;
-    overflow:hidden;
-    background:#000;
+  /* ---------- shared black grid background ---------- */
+  .grid{
+    background-color:#000;
+    background-image:
+      linear-gradient(rgba(140,140,140,0.28) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(140,140,140,0.28) 1px, transparent 1px);
+    background-size:48px 48px;
   }
-  .stage-pin video{
-    position:absolute; inset:0;
-    width:100%; height:100%;
-    object-fit:cover;
-  }
-  .dim{ position:absolute; inset:0; background:#000; opacity:0; will-change:opacity; }
 
-  .ring{
-    position:absolute; left:50%; top:50%;
-    width:min(92vmin, 760px); aspect-ratio:1;
-    margin:calc(min(92vmin, 760px) / -2) 0 0 calc(min(92vmin, 760px) / -2);
-    opacity:0; will-change:transform, opacity;
+  /* one scroll = one screen (mouse / trackpad) */
+  @media (hover:hover) and (pointer:fine){
+    html{ scroll-snap-type:y mandatory; }
+    .hero, .toss, .info{ scroll-snap-align:start; }
   }
-  .ring svg{ width:100%; height:100%; overflow:visible; }
-  .ring text{
-    font-family:'Anton', sans-serif;
-    font-size:46px;
-    fill:var(--paper);
-    letter-spacing:0.04em;
-    text-transform:uppercase;
-  }
-  .ring .ring-heart{
-    position:absolute; inset:0;
-    display:flex; align-items:center; justify-content:center;
-    font-size:min(30vmin, 220px); color:var(--red); line-height:1;
-    filter: drop-shadow(0 6px 24px rgba(0,0,0,0.5));
-    animation: beat 1.4s ease-in-out infinite;
-  }
-  @keyframes beat{ 0%,100%{ transform:scale(1); } 15%{ transform:scale(1.14); } 30%{ transform:scale(0.98); } 45%{ transform:scale(1.08); } }
 
+  /* ---------- 1: full-screen video ---------- */
+  .hero{ position:relative; height:100vh; height:100svh; overflow:hidden; background:#000; }
+  .hero video{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
   .cue{
-    position:absolute; left:0; right:0; bottom:28px;
-    text-align:center;
-    font-size:11px; letter-spacing:0.28em; text-transform:uppercase;
-    color:var(--paper);
-    text-shadow:0 1px 8px rgba(0,0,0,0.7);
-    transition: opacity 0.4s ease;
-    pointer-events:none;
+    position:absolute; left:0; right:0; bottom:28px; text-align:center;
+    font-size:11px; letter-spacing:0.28em; text-transform:uppercase; color:var(--paper);
+    text-shadow:0 1px 8px rgba(0,0,0,0.7); pointer-events:none;
   }
   .cue span{ display:inline-block; animation: bob 1.6s ease-in-out infinite; }
   @keyframes bob{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(8px); } }
-  #cueOrder{ opacity:0; }
 
-  /* ---------- 3: the photo toss ---------- */
-  .toss{ position:relative; height: 480vh; background: var(--paper);
-    background-image: radial-gradient(rgba(0,0,0,0.05) 1px, transparent 1px); background-size:4px 4px; color:var(--ink); }
-  .toss-pin{ position:sticky; top:0; height:100vh; height:100svh; overflow:hidden; }
+  /* ---------- 2: photos all land on one scroll ---------- */
+  .toss{ position:relative; height:100vh; height:100svh; overflow:hidden; color:var(--paper); }
   .toss-title{
     position:absolute; left:0; right:0; top:50%; transform:translateY(-50%);
     text-align:center; padding:0 12px;
     font-family:'Anton', sans-serif; text-transform:uppercase;
     font-size:min(24vw, 250px); line-height:0.9; letter-spacing:0.01em;
-    color:rgba(23,21,18,0.09);
-    will-change:transform;
+    color:rgba(233,228,214,0.08);
   }
-  .toss-title em{ font-style:normal; color:rgba(192,36,47,0.22); }
+  .toss-title em{ font-style:normal; color:rgba(192,36,47,0.35); }
   .toss-marker{
     position:absolute; left:0; right:0; top:22px; text-align:center;
     font-family:'Permanent Marker', cursive; font-size:clamp(16px, 3.4vw, 26px); color:var(--red);
@@ -96,9 +68,11 @@
     position:absolute; left:50%; top:50%;
     width:clamp(130px, 30vw, 250px);
     margin:calc(clamp(130px, 30vw, 250px) * -0.6) 0 0 calc(clamp(130px, 30vw, 250px) / -2);
-    will-change:transform, opacity;
     opacity:0;
+    transition: transform 0.9s cubic-bezier(.2,.85,.25,1.15), opacity 0.4s ease;
+    transition-delay: calc(var(--i) * 90ms);
   }
+  .toss.in .shot{ opacity:1; }
   .shot .card{
     background:#fbf9f2; padding:9px 9px 34px;
     box-shadow:0 14px 30px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.2);
@@ -127,7 +101,6 @@
 
   /* ---------- 4: order ---------- */
   .info{
-    background: var(--ink);
     color: var(--paper);
     padding: 64px 22px 72px;
     min-height:100vh; min-height:100svh;
@@ -243,17 +216,14 @@
     color:#8a8672; background:var(--ink); border-top:1px solid #2c2a24;
   }
 
-  /* Reduced motion: no pinned animation, photos become a plain wrap grid */
+  /* Reduced motion: photos become a plain wrap grid */
   @media (prefers-reduced-motion: reduce){
-    .stage{ height:auto; }
-    .stage-pin{ height:100svh; }
-    .ring{ opacity:1; }
     .toss{ height:auto; padding:70px 16px; }
-    .toss-pin{ position:static; height:auto; overflow:visible; display:flex; flex-wrap:wrap; gap:28px; justify-content:center; }
     .toss-title, .toss-cue{ display:none; }
-    .toss-marker{ position:static; width:100%; margin-bottom:10px; }
-    .shot{ position:relative; left:auto; top:auto; margin:0; opacity:1 !important; transform:none !important; }
-    .shot .card, .ring-heart, .cue span, .toss-cue span{ animation:none; }
+    .toss-marker{ position:static; margin-bottom:24px; }
+    .toss .shot{ position:relative; left:auto; top:auto; margin:0 14px 28px; display:inline-block; opacity:1; transform:none !important; transition:none; }
+    .toss{ text-align:center; }
+    .shot .card, .cue span, .toss-cue span{ animation:none; }
   }
 </style>
 </head>
@@ -261,47 +231,30 @@
 
 <div class="heart-overlay" id="heartOverlay"></div>
 
-<!-- 1 + 2: full-screen video, scroll to reveal the ring -->
-<section class="stage" id="stage">
-  <div class="stage-pin">
-    <video autoplay muted loop playsinline preload="auto" poster="hfc-poster.jpg">
-      <source src="hfc.mp4" type="video/mp4">
-    </video>
-    <div class="dim" id="dim"></div>
-
-    <div class="ring" id="ring" aria-label="I love Hammersmith FC">
-      <svg viewBox="0 0 600 600" aria-hidden="true">
-        <defs><path id="circ" d="M300,300 m-232,0 a232,232 0 1,1 464,0 a232,232 0 1,1 -464,0"/></defs>
-        <text><textPath href="#circ" textLength="1440" lengthAdjust="spacing">I ❤ Hammersmith FC · I ❤ Hammersmith FC · I ❤ Hammersmith FC ·</textPath></text>
-      </svg>
-      <div class="ring-heart">❤</div>
-    </div>
-
-    <div class="cue" id="cueEnter"><span>scroll to enter ↓</span></div>
-    <div class="cue" id="cueOrder"><span>scroll ↓</span></div>
-  </div>
+<!-- 1: full-screen video -->
+<section class="hero" id="hero">
+  <video autoplay muted loop playsinline preload="auto" poster="hfc-poster.jpg">
+    <source src="hfc.mp4" type="video/mp4">
+  </video>
+  <div class="cue"><span>scroll to enter ↓</span></div>
 </section>
 
-<!-- 3: the photos fly in -->
-<section class="toss" id="toss">
-  <div class="toss-pin">
-    <div class="toss-marker">designed by hammers, for hammers</div>
-    <div class="toss-title" id="tossTitle">I <em>❤</em><br>HFC</div>
-
-    <div class="shot"><div class="card" style="--d:0s"><img src="photos/photo1.jpg" alt="" loading="lazy"><div class="tape"></div></div></div>
-    <div class="shot"><div class="card" style="--d:-1s"><img src="photos/photo2.jpg" alt="" loading="lazy"><div class="tape"></div></div></div>
-    <div class="shot"><div class="card" style="--d:-2s"><img src="photos/photo3.jpg" alt="" loading="lazy"><div class="tape"></div></div></div>
-    <div class="shot"><div class="card" style="--d:-3s"><img src="photos/photo4.jpg" alt="" loading="lazy"><div class="tape"></div></div></div>
-    <div class="shot"><div class="card" style="--d:-4s"><img src="photos/photo5.jpg" alt="" loading="lazy"><div class="tape"></div></div></div>
-    <div class="shot"><div class="card" style="--d:-5s"><img src="photos/photo6.jpg" alt="" loading="lazy"><div class="tape"></div></div></div>
-    <div class="shot"><div class="card" style="--d:-2.5s"><img src="photos/photo7.jpg" alt="" loading="lazy"><div class="tape"></div></div></div>
-
-    <div class="toss-cue"><span>scroll to order ↓</span></div>
-  </div>
+<!-- 2: the photos all land at once -->
+<section class="toss grid" id="toss">
+  <div class="toss-marker">designed by hammers, for hammers</div>
+  <div class="toss-title">I <em>❤</em><br>HFC</div>
+  <div class="shot" style="--i:0"><div class="card" style="--d:0s"><img src="photos/photo1.jpg" alt=""><div class="tape"></div></div></div>
+  <div class="shot" style="--i:1"><div class="card" style="--d:-1s"><img src="photos/photo2.jpg" alt=""><div class="tape"></div></div></div>
+  <div class="shot" style="--i:2"><div class="card" style="--d:-2s"><img src="photos/photo3.jpg" alt=""><div class="tape"></div></div></div>
+  <div class="shot" style="--i:3"><div class="card" style="--d:-3s"><img src="photos/photo4.jpg" alt=""><div class="tape"></div></div></div>
+  <div class="shot" style="--i:4"><div class="card" style="--d:-4s"><img src="photos/photo5.jpg" alt=""><div class="tape"></div></div></div>
+  <div class="shot" style="--i:5"><div class="card" style="--d:-5s"><img src="photos/photo6.jpg" alt=""><div class="tape"></div></div></div>
+  <div class="shot" style="--i:6"><div class="card" style="--d:-2.5s"><img src="photos/photo7.jpg" alt=""><div class="tape"></div></div></div>
+  <div class="toss-cue"><span>scroll to order ↓</span></div>
 </section>
 
 <!-- 4: order -->
-<section class="info" id="order">
+<section class="info grid" id="order">
   <div class="stub">
     <form id="formState" novalidate>
       <h2>I need one</h2>
@@ -364,76 +317,46 @@
 </template>
 
 <script>
-  /* ================= scroll-driven motion ================= */
-  const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
-  const ease = t => 1 - Math.pow(1 - t, 3);
-  const lerp = (a, b, t) => a + (b - a) * t;
+  /* ================= photos: all fly in on one scroll ================= */
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  const stage = document.getElementById('stage');
-  const ring = document.getElementById('ring');
-  const dim = document.getElementById('dim');
-  const cueEnter = document.getElementById('cueEnter');
-  const cueOrder = document.getElementById('cueOrder');
-
   const toss = document.getElementById('toss');
-  const tossTitle = document.getElementById('tossTitle');
   const shots = Array.from(document.querySelectorAll('.shot'));
 
-  // where each photo lands (fraction of stage w/h from centre, rotation) and the angle it flies in from
+  // final spot (fraction of screen from centre) + rotation for each photo
   const landing = [
     [-0.27, -0.20, -8], [0.06, -0.27, 5], [0.29, -0.10, 9], [-0.22, 0.17, 6],
     [0.09, 0.13, -5], [0.31, 0.24, -10], [-0.03, -0.03, 3]
   ];
-  const origins = shots.map((_, i) => (i / shots.length) * Math.PI * 2 + 0.6);
 
-  function progressOf(el){
-    const r = el.getBoundingClientRect();
-    return clamp(-r.top / (r.height - window.innerHeight));
-  }
-
-  function update(){
-    if(reduced) return;
-
-    // stage: 0–.22 video only, .22–.55 ring appears/spins, rest keeps spinning
-    const p = progressOf(stage);
-    const ringT = ease(clamp((p - 0.22) / 0.3));
-    ring.style.opacity = ringT;
-    ring.style.transform = 'rotate(' + (p * 540) + 'deg) scale(' + lerp(0.35, 1, ringT) + ')';
-    dim.style.opacity = ringT * 0.55;
-    cueEnter.style.opacity = clamp(1 - p / 0.1);
-    cueOrder.style.opacity = clamp((p - 0.8) / 0.15);
-
-    // photo toss
-    const q = progressOf(toss);
+  function place(landed){
     const W = window.innerWidth, H = window.innerHeight;
     const spread = W < 700 ? 1.5 : 1;
     shots.forEach((s, i) => {
-      const t = ease(clamp((q - 0.04 - i * 0.095) / 0.28));
       const [lx, ly, lr] = landing[i];
-      const fromX = Math.cos(origins[i]) * W * 0.9, fromY = Math.sin(origins[i]) * H * 0.9;
-      const x = lerp(fromX, lx * W * spread, t);
-      const y = lerp(fromY, ly * H, t);
-      const rot = lerp(origins[i] * 90 + 160, lr, t);
-      s.style.opacity = clamp(t * 4);
-      s.style.transform = 'translate(' + x + 'px,' + y + 'px) rotate(' + rot + 'deg) scale(' + lerp(0.5, 1, t) + ')';
+      if(landed){
+        s.style.transform = 'translate(' + lx * W * spread + 'px,' + ly * H + 'px) rotate(' + lr + 'deg)';
+      } else {
+        const a = (i / shots.length) * Math.PI * 2 + 0.6;
+        s.style.transform = 'translate(' + Math.cos(a) * W + 'px,' + Math.sin(a) * H + 'px) rotate(' + (a * 90 + 160) + 'deg) scale(0.5)';
+      }
       s.style.zIndex = i + 1;
     });
-    tossTitle.style.transform = 'translateY(-50%) scale(' + lerp(0.9, 1.08, q) + ')';
   }
 
-  let ticking = false;
-  function onScroll(){
-    if(ticking) return;
-    ticking = true;
-    requestAnimationFrame(() => { update(); ticking = false; });
+  if(!reduced){
+    place(false);
+    window.addEventListener('resize', () => place(toss.classList.contains('in')));
+    new IntersectionObserver(entries => {
+      entries.forEach(en => {
+        const on = en.isIntersecting;
+        toss.classList.toggle('in', on);
+        place(on);
+      });
+    }, { threshold: 0.55 }).observe(toss);
   }
-  window.addEventListener('scroll', onScroll, { passive: true });
-  window.addEventListener('resize', onScroll);
-  update();
 
   // some browsers block autoplay until a gesture; retry on first touch/scroll
-  const vid = document.querySelector('.stage-pin video');
+  const vid = document.querySelector('.hero video');
   const kick = () => { vid.play().catch(()=>{}); };
   window.addEventListener('scroll', kick, { once: true, passive: true });
   window.addEventListener('touchstart', kick, { once: true, passive: true });
