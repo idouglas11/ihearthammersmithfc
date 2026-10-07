@@ -63,6 +63,7 @@
     position:absolute; left:0; right:0; top:22px; text-align:center;
     font-family:'Permanent Marker', cursive; font-size:clamp(16px, 3.4vw, 26px); color:var(--red);
     transform:rotate(-2deg);
+    z-index:50; pointer-events:none;
   }
   .shot{
     position:absolute; left:50%; top:50%;
@@ -81,7 +82,7 @@
     animation: drift 6s ease-in-out infinite;
     animation-delay: var(--d, 0s);
   }
-  .shot:hover{ z-index:50 !important; }
+  .shot:hover{ z-index:40 !important; }
   .shot:hover .card{ transform: scale(1.12) rotate(0deg); box-shadow:0 24px 44px rgba(0,0,0,0.4); animation-play-state:paused; }
   @keyframes drift{ 0%,100%{ transform: translateY(0) rotate(0deg); } 50%{ transform: translateY(-7px) rotate(1.2deg); } }
   .shot img{
@@ -94,6 +95,7 @@
     box-shadow:0 1px 2px rgba(0,0,0,0.15);
   }
   .toss-cue{
+    z-index:50;
     position:absolute; left:0; right:0; bottom:26px; text-align:center;
     font-size:11px; letter-spacing:0.28em; text-transform:uppercase; color:#8a8672;
   }
@@ -106,7 +108,11 @@
     min-height:100vh; min-height:100svh;
     display:flex; align-items:center;
   }
-  .stub{ max-width:420px; width:100%; margin:0 auto; }
+  .stub{
+    max-width:460px; width:100%; margin:0 auto; padding:30px 26px 32px;
+    background:#161616; border:1px solid #444;
+    box-shadow:0 0 0 6px rgba(0,0,0,0.6), 0 24px 60px rgba(0,0,0,0.8);
+  }
   .stub h2{
     font-family:'Anton', sans-serif; text-transform:uppercase;
     font-size:25px; letter-spacing:0.01em; margin-bottom:4px;
@@ -334,7 +340,7 @@
     shots.forEach((s, i) => {
       const [lx, ly, lr] = landing[i];
       if(landed){
-        s.style.transform = 'translate(' + lx * W * spread + 'px,' + ly * H + 'px) rotate(' + lr + 'deg)';
+        s.style.transform = 'translate(' + lx * W * spread + 'px,' + (0.04 + ly * 0.85) * H + 'px) rotate(' + lr + 'deg)';
       } else {
         const a = (i / shots.length) * Math.PI * 2 + 0.6;
         s.style.transform = 'translate(' + Math.cos(a) * W + 'px,' + Math.sin(a) * H + 'px) rotate(' + (a * 90 + 160) + 'deg) scale(0.5)';
