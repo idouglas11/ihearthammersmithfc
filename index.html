@@ -74,8 +74,9 @@
   }
   .shot{
     position:absolute; left:50%; top:50%;
-    width:clamp(130px, 30vw, 250px);
-    margin:calc(clamp(130px, 30vw, 250px) * -0.6) 0 0 calc(clamp(130px, 30vw, 250px) / -2);
+    --pw:clamp(130px, 30vw, 250px);
+    width:var(--pw);
+    margin:calc(var(--pw) * -0.6) 0 0 calc(var(--pw) / -2);
     opacity:0;
     transition: transform 0.9s cubic-bezier(.2,.85,.25,1.15), opacity 0.4s ease;
     transition-delay: calc(var(--i) * 90ms);
@@ -229,6 +230,24 @@
     color:#8a8672; background:var(--ink); border-top:1px solid #2c2a24;
   }
 
+  /* ---------- phones ---------- */
+  @media (max-width:700px){
+    .shot{ --pw:38vw; }
+    .toss-marker{ padding:0 12px; line-height:1.15; }
+    .shot .card{ padding:7px 7px 26px; }
+  }
+  @media (max-width:480px){
+    .info{ padding:28px 12px 40px; align-items:flex-start; }
+    .stub{ padding:22px 16px 24px; }
+    .stub h2{ font-size:23px; }
+    .shirt{ padding:14px 12px 16px; }
+    .sizes{ gap:6px; }
+    .size-btn{ flex:1 1 0; min-width:44px; width:auto; padding:13px 0; }
+    .style-btn{ flex:1 1 100%; padding:13px 10px; }
+    .total span:last-child{ font-size:24px; }
+    footer{ padding:22px 14px; }
+  }
+
   /* Reduced motion: photos become a plain wrap grid */
   @media (prefers-reduced-motion: reduce){
     .toss{ height:auto; padding:70px 16px; }
@@ -335,19 +354,32 @@
   const toss = document.getElementById('toss');
   const shots = Array.from(document.querySelectorAll('.shot'));
 
-  // final spot (fraction of screen from centre) + rotation for each photo
+  // final spot for each photo. Desktop: fraction of screen from centre + rotation.
   const landing = [
     [-0.27, -0.20, -8], [0.06, -0.27, 5], [0.29, -0.10, 9], [-0.22, 0.17, 6],
     [0.09, 0.13, -5], [0.31, 0.24, -10], [-0.03, -0.03, 3]
   ];
+  // Phones: -1..1 across the room left once photo size and the top/bottom text are kept clear.
+  const landingPhone = [
+    [-0.8, -0.85, -7], [0.75, -0.62, 6], [-0.7, -0.12, 8], [0.7, 0.22, -6],
+    [-0.55, 0.7, 5], [0.7, 0.9, -9], [0, 0.08, 3]
+  ];
 
   function place(landed){
     const W = window.innerWidth, H = window.innerHeight;
-    const spread = W < 700 ? 1.5 : 1;
+    const phone = W <= 700;
+    const pw = shots[0].offsetWidth, ph = pw * 1.25 + 20;
+    const rx = Math.max(0, W / 2 - pw / 2 - 8);
+    const ry = Math.max(0, H / 2 - ph / 2 - 64);
     shots.forEach((s, i) => {
-      const [lx, ly, lr] = landing[i];
       if(landed){
-        s.style.transform = 'translate(' + lx * W * spread + 'px,' + (0.04 + ly * 0.85) * H + 'px) rotate(' + lr + 'deg)';
+        let x, y, r;
+        if(phone){
+          const l = landingPhone[i]; x = l[0] * rx; y = l[1] * ry; r = l[2];
+        } else {
+          const l = landing[i]; x = l[0] * W; y = (0.04 + l[1] * 0.85) * H; r = l[2];
+        }
+        s.style.transform = 'translate(' + x + 'px,' + y + 'px) rotate(' + r + 'deg)';
       } else {
         const a = (i / shots.length) * Math.PI * 2 + 0.6;
         s.style.transform = 'translate(' + Math.cos(a) * W + 'px,' + Math.sin(a) * H + 'px) rotate(' + (a * 90 + 160) + 'deg) scale(0.5)';
