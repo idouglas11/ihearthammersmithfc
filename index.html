@@ -40,8 +40,8 @@
 
   /* one scroll = one screen (mouse / trackpad) */
   @media (hover:hover) and (pointer:fine){
-    html{ scroll-snap-type:y mandatory; }
-    .hero, .toss, .info{ scroll-snap-align:start; }
+    html{ scroll-snap-type:y proximity; }
+    .hero, .toss{ scroll-snap-align:start; }
   }
 
   /* ---------- 1: full-screen video ---------- */
@@ -232,6 +232,10 @@
 
   /* ---------- phones ---------- */
   @media (max-width:700px){
+    /* show the whole video, uncropped, at the top; photos follow below */
+    .hero{ height:auto; overflow:visible; padding-bottom:18px; }
+    .hero video{ position:relative; inset:auto; display:block; height:auto; aspect-ratio:16/9; object-fit:contain; background:#000; }
+    .cue{ position:static; margin-top:16px; text-shadow:none; color:#8a8672; }
     .shot{ --pw:38vw; }
     .toss-marker{ padding:0 12px; line-height:1.15; }
     .shot .card{ padding:7px 7px 26px; }
@@ -264,7 +268,7 @@
 <div class="heart-overlay" id="heartOverlay"></div>
 
 <!-- 1: full-screen video -->
-<section class="hero" id="hero">
+<section class="hero grid" id="hero">
   <video autoplay muted loop playsinline preload="auto" poster="hfc-poster.jpg">
     <source src="hfc.mp4" type="video/mp4">
   </video>
